@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier la Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            overflow: hidden;
+            cursor: none; /* Cacher la souris */
+        }
+        /* Style du trailer */
+        .trailer {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #569cd6;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 10px #569cd6;
+            transform: translate(-50%, -50%);
+        }
+        /* Style des particules du trail */
+        .particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: rgba(86, 156, 214, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 8px rgba(86, 156, 214, 0.7);
+            animation: fadeOut 0.5s linear forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    <div class="trailer" id="trailer"></div>
+
+    <!-- Script pour les particules -->
+    <script>
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#569cd6" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 4, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#569cd6", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 2, "direction": "none" }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" }
+                },
+                "modes": { "repulse": { "distance": 100, "duration": 0.4 } }
+            },
+            "retina_detect": true
+        });
+
+        // Script pour le trailer avec effet de traînée
+        const trailer = document.getElementById("trailer");
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener("mousemove", (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            trailer.style.left = `${mouseX}px`;
+            trailer.style.top = `${mouseY}px`;
+            createParticle(mouseX, mouseY);
+        });
+
+        function createParticle(x, y) {
+            const particle = document.createElement("div");
+            particle.classList.add("particle");
+            document.body.appendChild(particle);
+            particle.style.left = `${x - 3}px`;
+            particle.style.top = `${y - 3}px`;
+
+            setTimeout(() => {
+                particle.remove();
+            }, 500);
+        }
+    </script>
+</body>
+</html>
