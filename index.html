@@ -10,8 +10,11 @@
             background-color: black;
             margin: 0;
             overflow: hidden;
-            cursor: none; /* Cacher la souris */
+            cursor: none;
+            transition: transform 0.2s ease-out;
+            transform-origin: center center;
         }
+
         /* Style du trailer */
         .trailer {
             position: fixed;
@@ -23,6 +26,7 @@
             box-shadow: 0 0 10px #569cd6;
             transform: translate(-50%, -50%);
         }
+
         /* Style des particules du trail */
         .particle {
             position: fixed;
@@ -34,6 +38,7 @@
             box-shadow: 0 0 8px rgba(86, 156, 214, 0.7);
             animation: fadeOut 0.5s linear forwards;
         }
+
         /* Style des confettis */
         .confetti {
             position: fixed;
@@ -44,13 +49,29 @@
             pointer-events: none;
             animation: confettiFall 0.8s ease-out forwards;
         }
+
         @keyframes fadeOut {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0); }
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
         }
+
         @keyframes confettiFall {
-            0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.5); }
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(0.5);
+            }
         }
     </style>
 </head>
@@ -85,7 +106,11 @@
 
         // Script pour le trailer avec effet de traînée
         const trailer = document.getElementById("trailer");
-        let mouseX = 0, mouseY = 0;
+        let mouseX = 0,
+            mouseY = 0;
+
+        let zoomTimer;
+        let isZooming = false;
 
         document.addEventListener("mousemove", (event) => {
             mouseX = event.clientX;
@@ -93,10 +118,34 @@
             trailer.style.left = `${mouseX}px`;
             trailer.style.top = `${mouseY}px`;
             createParticle(mouseX, mouseY);
+            updateZoomOrigin(mouseX, mouseY); // Update zoom origin to mouse position
         });
 
-        document.addEventListener("click", () => {
-            createConfetti(mouseX, mouseY);
+        // Mouse events
+        document.addEventListener("mousedown", (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            createConfetti(mouseX, mouseY)
+            if (event.button === 0) { // Left mouse button
+                startZooming(event);
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            stopZooming();
+        });
+
+        // Touch events
+        document.addEventListener("touchstart", (event) => {
+            event.preventDefault(); // Prevent default behavior
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            createConfetti(mouseX, mouseY)
+            startZooming(event);
+        });
+
+        document.addEventListener("touchend", () => {
+            stopZooming();
         });
 
         function createParticle(x, y) {
@@ -128,6 +177,33 @@
                 }, 800);
             }
         }
+
+        // Start zooming after 1 second of holding the mouse button or touch
+        function startZooming(event) {
+            clearTimeout(zoomTimer);
+            zoomTimer = setTimeout(() => {
+                if (!isZooming) {
+                    isZooming = true;
+                    document.body.style.transform = 'scale(1.7)'; // Zoom In
+                }
+            }, 1000); // Start zooming after 1 second of holding
+            updateZoomOrigin(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
+        }
+
+        // Stop zooming when the mouse button or touch is released
+        function stopZooming() {
+            clearTimeout(zoomTimer);
+            if (isZooming) {
+                isZooming = false;
+                document.body.style.transform = 'scale(1)'; // Zoom Out
+            }
+        }
+
+        function updateZoomOrigin(x, y) {
+            // Update the transform origin to be centered on the mouse position or touch
+            document.body.style.transformOrigin = `${x}px ${y}px`;
+        }
     </script>
 </body>
+
 </html>
