@@ -34,9 +34,23 @@
             box-shadow: 0 0 8px rgba(86, 156, 214, 0.7);
             animation: fadeOut 0.5s linear forwards;
         }
+        /* Style des confettis */
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background-color: hsl(calc(360 * var(--hue)), 100%, 50%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: confettiFall 0.8s ease-out forwards;
+        }
         @keyframes fadeOut {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0); }
+        }
+        @keyframes confettiFall {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.5); }
         }
     </style>
 </head>
@@ -81,6 +95,10 @@
             createParticle(mouseX, mouseY);
         });
 
+        document.addEventListener("click", () => {
+            createConfetti(mouseX, mouseY);
+        });
+
         function createParticle(x, y) {
             const particle = document.createElement("div");
             particle.classList.add("particle");
@@ -91,6 +109,24 @@
             setTimeout(() => {
                 particle.remove();
             }, 500);
+        }
+
+        function createConfetti(x, y) {
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement("div");
+                confetti.classList.add("confetti");
+                document.body.appendChild(confetti);
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 50 + 20;
+                confetti.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+                confetti.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+                confetti.style.setProperty('--hue', Math.random());
+                confetti.style.left = `${x}px`;
+                confetti.style.top = `${y}px`;
+                setTimeout(() => {
+                    confetti.remove();
+                }, 800);
+            }
         }
     </script>
 </body>
